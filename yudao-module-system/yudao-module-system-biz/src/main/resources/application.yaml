@@ -27,6 +27,15 @@ spring:
     redis:
       time-to-live: 1h # 设置过期时间为 1 小时
 
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: dc3
+      auth-type: password
+      username: dc3
+      password: dc3
+
 # MyBatis Plus 的配置项
 mybatis-plus:
   configuration:
@@ -66,15 +75,32 @@ spring:
         smsSendConsumer-in-0:
           destination: system_sms_send
           group: system_sms_send_consumer_group
+        driver-output:
+          destination: DRIVER-TOPIC-01
+        driver-input:
+          destination: DRIVER-TOPIC-01
+          group: driver-consumer-DRIVER-TOPIC-01
+        device-output:
+          destination: DEVICE-TOPIC-01
+        device-input:
+          destination: DEVICE-TOPIC-01
+          group: device-consumer-DEVICE-TOPIC-01
+        driver-config-output:
+          destination: DRIVER-CONFIG-TOPIC-01
+        driver-config-input:
+          destination: DRIVER-CONFIG-TOPIC-01
+          group: driver-config-consumer-DRIVER-CONFIG-TOPIC-01
+        point-input:
+          destination: POINT-TOPIC-01
+          group: point-consumer-POINT-TOPIC-01
       # Spring Cloud Stream RocketMQ 配置项
       rocketmq:
         # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
         binder:
-          name-server: 127.0.0.1:9876 # RocketMQ Namesrv 地址
-        default: # 默认 bindings 全局配置
-          producer: # RocketMQ Producer 配置项，对应 RocketMQProducerProperties 类
-            group: system_producer_group # 生产者分组
-            send-type: SYNC # 发送模式，SYNC 同步
+          name-server: 192.168.1.2:9876 # RocketMQ Namesrv 地址
+        default:
+          producer:
+            group: system-producer-group
 
     # Spring Cloud Bus 配置项，对应 BusProperties 类
     bus:

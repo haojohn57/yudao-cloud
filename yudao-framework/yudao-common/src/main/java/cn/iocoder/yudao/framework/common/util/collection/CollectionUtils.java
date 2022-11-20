@@ -183,5 +183,4 @@ public class CollectionUtils {
     public static <T> Collection<T> singleton(T deptId) {
         return deptId == null ? Collections.emptyList() : Collections.singleton(deptId);
     }
-
 }

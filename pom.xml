@@ -16,7 +16,9 @@
         <module>yudao-module-bpm</module>
         <module>yudao-module-system</module>
         <module>yudao-module-infra</module>
+        <module>yudao-module-data</module>
         <!--        <module>yudao-module-pay</module>-->
+        <module>yudao-module-driver</module>
     </modules>
 
     <name>${project.artifactId}</name>
@@ -59,6 +61,15 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <configuration>
+                        <delimiters>@</delimiters>
+                        <useDefaultDelimiters>false</useDefaultDelimiters>
+                    </configuration>
+                </plugin>
                 <!-- maven-compiler-plugin 插件，解决 Lombok + MapStruct 组合 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -81,6 +92,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <!-- 使用 aliyun 的 Maven 源，提升下载速度 -->
