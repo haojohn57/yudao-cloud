@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.gateway.filter.logging;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import cn.iocoder.yudao.framework.common.util.date.DateUtils;
 import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
 import cn.iocoder.yudao.gateway.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.gateway.util.WebFrameworkUtils;
+import com.alibaba.nacos.common.utils.MapUtils;
 import com.alibaba.nacos.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -38,12 +41,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static cn.hutool.core.date.DatePattern.NORM_DATETIME_MS_FORMAT;
+import static cn.hutool.core.date.DatePattern.NORM_DATETIME_MS_FORMATTER;
 
 /**
  * 网关的访问日志过滤器
@@ -73,7 +77,7 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         // TODO 芋艿：暂未实现
 
         // 方式三：打印到控制台，方便排查错误
-        Map<String, Object> values = new LinkedHashMap<>(); // 手工拼接，保证排序
+        Map<String, Object> values = MapUtil.newHashMap(15, true); // 手工拼接，保证排序；15 保证不用扩容
         values.put("userId", gatewayLog.getUserId());
         values.put("userType", gatewayLog.getUserType());
         values.put("routeId", gatewayLog.getRoute() != null ? gatewayLog.getRoute().getId() : null);
@@ -89,8 +93,8 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         values.put("responseHeaders", gatewayLog.getResponseHeaders() != null ?
                 JsonUtils.toJsonString(gatewayLog.getResponseHeaders().toSingleValueMap()) : null);
         values.put("httpStatus", gatewayLog.getHttpStatus());
-        values.put("startTime", DateUtil.format(gatewayLog.getStartTime(), NORM_DATETIME_MS_FORMAT));
-        values.put("endTime", DateUtil.format(gatewayLog.getEndTime(), NORM_DATETIME_MS_FORMAT));
+        values.put("startTime", LocalDateTimeUtil.format(gatewayLog.getStartTime(), NORM_DATETIME_MS_FORMATTER));
+        values.put("endTime", LocalDateTimeUtil.format(gatewayLog.getEndTime(), NORM_DATETIME_MS_FORMATTER));
         values.put("duration", gatewayLog.getDuration() != null ? gatewayLog.getDuration() + " ms" : null);
         log.info("[writeAccessLog][网关日志：{}]", JsonUtils.toJsonPrettyString(values));
     }
@@ -112,7 +116,7 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         gatewayLog.setRequestUrl(request.getURI().getRawPath());
         gatewayLog.setQueryParams(request.getQueryParams());
         gatewayLog.setRequestHeaders(request.getHeaders());
-        gatewayLog.setStartTime(new Date());
+        gatewayLog.setStartTime(LocalDateTime.now());
         gatewayLog.setUserIp(WebFrameworkUtils.getClientIP(exchange));
 
         // 继续 filter 过滤
@@ -179,8 +183,9 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
                 if (body instanceof Flux) {
                     DataBufferFactory bufferFactory = response.bufferFactory();
                     // 计算执行时间
-                    gatewayLog.setEndTime(new Date());
-                    gatewayLog.setDuration((int) DateUtils.diff(gatewayLog.getEndTime(), gatewayLog.getStartTime()));
+                    gatewayLog.setEndTime(LocalDateTime.now());
+                    gatewayLog.setDuration((int) (LocalDateTimeUtil.between(gatewayLog.getStartTime(),
+                            gatewayLog.getEndTime()).toMillis()));
                     // 设置其它字段
                     gatewayLog.setUserId(SecurityFrameworkUtils.getLoginUserId(exchange));
                     gatewayLog.setUserType(SecurityFrameworkUtils.getLoginUserType(exchange));
