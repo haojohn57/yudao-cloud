@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>yudao</artifactId>
+        <groupId>cn.iocoder.cloud</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>yudao-module-driver</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        driver 模块，主要实现iot接入设备驱动。
+    </description>
+    <modules>
+        <module>yudao-module-driver-jt808</module>
+        <module>yudao-module-driver-listening-virtual</module>
+        <module>yudao-module-driver-mqtt</module>
+        <module>yudao-module-driver-modbus-tcp</module>
+        <module>yudao-module-driver-opc-da</module>
+        <module>yudao-module-driver-opc-ua</module>
+        <module>yudao-module-driver-plcs7</module>
+        <module>yudao-module-driver-virtual</module>
+        <module>yudao-module-driver-edge-gateway</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-spring-boot-starter-biz-driver-sdk</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
+    </properties>
+
+</project>

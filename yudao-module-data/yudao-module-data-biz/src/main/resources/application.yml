@@ -1,0 +1,77 @@
+data:
+  point:
+    batch:
+      speed: ${POINT_BATCH_SPEED:100}
+      interval: ${POINT_BATCH_INTERVAL:5}
+    sava:
+      influxdb:
+        enable: false
+      opentsdb:
+        enable: false
+        host: dc3-opentsdb
+        port: 4242
+      elasticsearch:
+        enable: false
+        host: dc3-elasticsearch
+        port: 9200
+
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  redis:
+    database: 3
+  cache:
+    redis:
+      time-to-live: ${CACHE_REDIS_TIME_TO_LIVE:12H}
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: dc3
+      auth-type: password
+      username: dc3
+      password: dc3
+
+  cloud:
+    # Spring Cloud Stream 配置项，对应 BindingServiceProperties 类
+    stream:
+      bindings:
+        point-input-01:
+          destination: POINT-TOPIC-01
+          group: point-value-consumer-POINT-TOPIC-01
+
+      # Spring Cloud Stream RocketMQ 配置项
+      rocketmq:
+        # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
+        binder:
+          name-server: 192.168.50.191:9876 # RocketMQ Namesrv 地址
+        default:
+          producer:
+            group: data-producer-group
+          consumer:
+            orderly: true
+            broadcasting: false
+
+    # Spring Cloud Bus 配置项，对应 BusProperties 类
+    bus:
+      enabled: true # 是否开启，默认为 true
+      id: ${spring.application.name}:${server.port} # 编号，Spring Cloud Alibaba 建议使用“应用:端口”的格式
+      destination: springCloudBus # 目标消息队列，默认为 springCloudBus
+
+
+xxl:
+  job:
+    executor:
+      appname: ${spring.application.name}  #${spring.application.name} # 执行器 AppName
+      logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
+    accessToken: default_token # 执行器通讯TOKEN
+    admin:
+      addresses: http://127.0.0.1:9090/xxl-job-admin # 调度中心部署跟地址
+
+

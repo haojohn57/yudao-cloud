@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.cloud</groupId>
+        <artifactId>yudao-module-driver</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>yudao-module-driver-listening-virtual</artifactId>
+    <packaging>jar</packaging>
+
+    <description>
+        IOT 平台 ListeningVirtual驱动，监听模式，提供 Tcp 和 Udp 两种模式，仅用于测试用途。
+    </description>
+
+    <dependencies>
+
+        <!--Netty-->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-spring-boot-starter-threadpool</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

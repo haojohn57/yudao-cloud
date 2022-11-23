@@ -1,0 +1,114 @@
+driver:
+  tenant: 益莲科技
+  name: ListeningVirtualDriver
+  type: driver
+  project: @project.artifactId@
+  description: @project.description@
+  custom:
+    tcp:
+      port: 6270
+    udp:
+      port: 6271
+  schedule:
+    status:
+      enable: true
+      corn: '0/10 * * * * ?'
+    read:
+      enable: false
+      corn: '0/30 * * * * ?'
+    custom:
+      enable: true
+      corn:  '0/5 * * * * ?'
+  point-attribute:
+    - displayName: 关键字
+      name: key
+      type: string
+      value: 62
+      description: 报文关键字
+      option:
+        type: input\select\checkox\switch\time...
+        required: true
+        data-type: static/url
+        data: jsonString
+    - displayName: 起始字节
+      name: start
+      type: int
+      value: 0
+      description: 起始字节，包含该字节
+      option:
+        type: input\select\checkox\switch\time...
+        required: true
+        data-type: static/url
+        data: jsonString
+    - displayName: 结束字节
+      name: end
+      type: int
+      value: 8
+      description: 结束字节，不包含该字节
+      option:
+        type: input\select\checkox\switch\time...
+        required: true
+        data-type: static/url
+        data: jsonString
+    - displayName: 类型
+      name: type
+      type: string
+      value: string
+      description: 解析类型，short、int、long、float、double、boolean、string
+      option:
+        type: input\select\checkox\switch\time...
+        required: true
+        data-type: static/url
+        data: jsonString
+spring:
+  application:
+    name: ${driver.project}_${driver.tenant}
+  profiles:
+    active: local
+  cloud:
+    # Spring Cloud Stream 配置项，对应 BindingServiceProperties 类
+    stream:
+      bindings:
+        driver-output-01:
+          destination: DRIVER-TOPIC-01
+        driver-config-input-01:
+          destination: DRIVER-CONFIG-TOPIC-01
+          group: driver-config-consumer-DRIVER-CONFIG-TOPIC-01
+
+      # Spring Cloud Stream RocketMQ 配置项
+      rocketmq:
+        # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
+        binder:
+          name-server: 192.168.1.2:9876 # RocketMQ Namesrv 地址
+        default:
+          producer:
+            group: driver-producer-group
+          consumer:
+            orderly: true
+            broadcasting: false
+
+    # Spring Cloud Bus 配置项，对应 BusProperties 类
+    bus:
+      enabled: true # 是否开启，默认为 true
+      id: ${spring.application.name}:${server.port} # 编号，Spring Cloud Alibaba 建议使用“应用:端口”的格式
+      destination: springCloudBus # 目标消息队列，默认为 springCloudBus
+
+
+
+server:
+  port: 8688
+  thread:
+    prefix: dc3-thread-
+    core-pool-size: 4
+    maximum-pool-size: 32
+    keep-alive-time: 15
+
+xxl:
+  job:
+    executor:
+      appname: ${driver.project} #${spring.application.name} # 执行器 AppName
+      logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
+    accessToken: default_token # 执行器通讯TOKEN
+    admin:
+      addresses: http://127.0.0.1:9090/xxl-job-admin # 调度中心部署跟地址
+

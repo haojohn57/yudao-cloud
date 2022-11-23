@@ -1,0 +1,50 @@
+--- #################### RPC 远程调用相关配置 ####################
+dubbo:
+  scan:
+    base-packages: ${yudao.info.base-package}.api # 指定 Dubbo 服务实现类的扫描基准包
+  protocol:
+    name: dubbo # 协议名称
+    port: -1 # 协议端口，-1 表示自增端口，从 20880 开始
+  registry:
+    address: spring-cloud://localhost # 设置使用 Spring Cloud 注册中心
+
+--- #################### MQ 消息队列相关配置 ####################
+
+spring:
+  cloud:
+    # Spring Cloud Stream 配置项，对应 BindingServiceProperties 类
+    stream:
+      function:
+        definition: smsSendConsumer;
+      # Binding 配置项，对应 BindingProperties Map
+      bindings:
+        smsSend-out-0:
+          destination: system_sms_send
+        smsSendConsumer-in-0:
+          destination: system_sms_send
+          group: system_sms_send_consumer_group
+      # Spring Cloud Stream RocketMQ 配置项
+      rocketmq:
+        # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
+        binder:
+          name-server: 127.0.0.1:9876 # RocketMQ Namesrv 地址
+        default: # 默认 bindings 全局配置
+          producer: # RocketMQ Producer 配置项，对应 RocketMQProducerProperties 类
+            group: system_producer_group # 生产者分组
+            send-type: SYNC # 发送模式，SYNC 同步
+
+    # Spring Cloud Bus 配置项，对应 BusProperties 类
+    bus:
+      enabled: true # 是否开启，默认为 true
+      id: ${spring.application.name}:${server.port} # 编号，Spring Cloud Alibaba 建议使用“应用:端口”的格式
+      destination: springCloudBus # 目标消息队列，默认为 springCloudBus
+  application:
+    name: driver-sdk
+--- #################### 定时任务相关配置 ####################
+
+xxl:
+  job:
+    executor:
+      appname: ${spring.application.name} # 执行器 AppName
+      logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
+    accessToken: default_token # 执行器通讯TOKEN

@@ -1,0 +1,19 @@
+# Development environment, customizable configuration
+driver:
+  schedule:
+    read:
+      corn: '0/5 * * * * ?'
+
+eureka:
+  instance:
+    # Custom node registration IP
+    ip-address: ${SERVICE_HOST:192.168.1.3}
+
+# Log config
+logging:
+  level:
+    com.dc3: DEBUG
+    com.dc3.common.sdk: DEBUG
+    com.dc3.common.sdk.service: DEBUG
+    com.dc3.common.sdk.service.job: DEBUG
+    com.dc3.common.sdk.service.rabbit: DEBUG
